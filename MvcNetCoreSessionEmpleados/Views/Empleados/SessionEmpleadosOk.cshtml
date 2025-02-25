@@ -1,5 +1,11 @@
 ﻿@model List<Empleado>
 
+@{
+	//Si la expresión Context.Session.GetObject<List<int>>("IDSEMPLEADOS") es null, 
+	//entonces en su lugar se asigna un nuevo objeto List<int>(), es decir, una lista vacía.
+	List<int> idsEmpleados = Context.Session.GetObject<List<int>>("IDSEMPLEADOS") ?? new List<int>();
+}
+
 <h1 style="color:darkred">Session Empleados OK</h1>
 
 <p>
@@ -17,11 +23,19 @@
 	{
 		<li class="list-group-item">
 			@empleado.Apellido
-			<a asp-controller="Empleados"
-			   asp-action="SessionEmpleadosOk"
-			   asp-route-idempleado="@empleado.IdEmpleado">
-				Almacenar empleado: @empleado.IdEmpleado
-			</a>
+
+			@if (idsEmpleados.Contains(empleado.IdEmpleado))
+			{
+				<img src="~/images/check.jpg" alt="Check" width="25" height="25">
+			}
+			else
+			{
+				<a asp-controller="Empleados"
+				   asp-action="SessionEmpleadosOk"
+				   asp-route-idempleado="@empleado.IdEmpleado">
+					Almacenar empleado: @empleado.IdEmpleado
+				</a>
+			}			
 		</li>
 	}
 </ul>

@@ -1,0 +1,49 @@
+﻿@model List<Empleado>
+
+@{
+    ViewData["Title"] = "EmpleadosAlmacenadosV4";
+}
+
+<h1>Empleados Almacenados Session V4</h1>
+
+<p>
+    <a asp-controller="Empleados"
+       asp-action="SessionEmpleadosV4"
+       class="btn btn-outline-dark">
+        Volver a almacenar empleados
+    </a>
+</p>
+<h2 style="color:red">
+    @ViewData["MENSAJE"]
+</h2>
+@if (Model != null)
+{
+    <table class="table table-striped table-warning">
+        <thead>
+            <tr>
+                <th>Apellido</th>
+                <th>Oficio</th>
+                <th>Salario</th>
+                <th>Id Departamento</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Empleado emp in Model)
+            {
+                <tr>
+                    <td>@emp.Apellido</td>
+                    <td>@emp.Oficio</td>
+                    <td>@emp.Salario</td>
+                    <td>@emp.IdDepartamento</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
