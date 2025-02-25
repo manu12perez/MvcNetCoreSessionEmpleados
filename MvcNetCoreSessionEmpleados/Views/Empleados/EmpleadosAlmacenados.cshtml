@@ -1,0 +1,51 @@
+﻿@{
+    List<Empleado> empleados = Context.Session.GetObject<List<Empleado>>("EMPLEADOS");
+}
+
+@{
+    ViewData["Title"] = "EmpleadosAlmacenados";
+}
+
+<h1>Empleados Almacenados Session</h1>
+
+<p>
+    <a asp-controller="Empleados" 
+        asp-action="SessionEmpleados"
+    class="btn btn-outline-dark">
+        Volver a almacenar empleados
+    </a>
+</p>
+@if(empleados == null){
+    <h2 style="color:red">
+        No existen empleados en Session
+    </h2>
+}else{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Apellido</th>
+                <th>Oficio</th>
+                <th>Salario</th>
+                <th>Id Departamento</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Empleado emp in empleados)
+            {
+                <tr>
+                    <td>@emp.Apellido</td>
+                    <td>@emp.Oficio</td>
+                    <td>@emp.Salario</td>
+                    <td>@emp.IdDepartamento</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
