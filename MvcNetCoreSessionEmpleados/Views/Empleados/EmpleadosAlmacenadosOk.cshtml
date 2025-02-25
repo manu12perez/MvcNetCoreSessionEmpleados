@@ -37,9 +37,12 @@
                     <td>@emp.Salario</td>
                     <td>@emp.IdDepartamento</td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                        <a asp-controller="Empleados"
+                           asp-action="QuitarEmpleadoSession"
+                           asp-route-idempleado="@emp.IdEmpleado"
+                           class="btn btn-danger btn-sm">
+                            Quitar de sesión
+                        </a>
                     </td>
                 </tr>
             }

@@ -1,8 +1,7 @@
 ﻿@model List<Empleado>
 
 @{
-	//Si la expresión Context.Session.GetObject<List<int>>("IDSEMPLEADOS") es null, 
-	//entonces en su lugar se asigna un nuevo objeto List<int>(), es decir, una lista vacía.
+	//Si la sesión no tiene empleados almacenados, inicializamos una lista vacía
 	List<int> idsEmpleados = Context.Session.GetObject<List<int>>("IDSEMPLEADOS") ?? new List<int>();
 }
 

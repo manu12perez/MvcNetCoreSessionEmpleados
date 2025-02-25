@@ -177,5 +177,31 @@ namespace MvcNetCoreSessionEmpleados.Controllers
                 return View(empleados);
             }
         }
+
+        public IActionResult QuitarEmpleadoSession(int idEmpleado)
+        {
+            // Recuperamos la lista de empleados almacenados en sesión
+            List<int> idsEmpleados = HttpContext.Session.GetObject<List<int>>("IDSEMPLEADOS");
+
+            if (idsEmpleados != null && idsEmpleados.Contains(idEmpleado))
+            {
+                // Eliminamos el ID del empleado de la lista
+                idsEmpleados.Remove(idEmpleado);
+
+                // Si la lista queda vacía, eliminamos la clave de sesión
+                if (idsEmpleados.Count == 0)
+                {
+                    HttpContext.Session.Remove("IDSEMPLEADOS");
+                }
+                else
+                {
+                    // Actualizamos la sesión con la nueva lista de empleados
+                    HttpContext.Session.SetObject("IDSEMPLEADOS", idsEmpleados);
+                }
+            }
+
+            // Redirigir de nuevo a la vista de empleados almacenados
+            return RedirectToAction("EmpleadosAlmacenadosOk");
+        }
     }
 }
