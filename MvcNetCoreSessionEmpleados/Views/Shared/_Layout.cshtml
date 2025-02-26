@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    //Si la sesión no tiene empleados almacenados, inicializamos una lista vacía
+    List<int> idsEmpleados = Context.Session.GetObject<List<int>>("IDSEMPLEADOS") ?? new List<int>();
+    List<Empleado> favoritos = memoryCache.Get<List<Empleado>>("FAVORITOS") ?? new List<Empleado>();
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -34,6 +40,15 @@
 						</li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Empleados" asp-action="SessionEmpleadosV4">Session Empleados V4</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Empleados" asp-action="EmpleadosFavoritos">Favoritos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark">Session:@idsEmpleados.Count</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark">Session:@favoritos.Count</a>
                         </li>
                     </ul>
                 </div>

@@ -3,9 +3,24 @@
 @{
 	//Si la sesión no tiene empleados almacenados, inicializamos una lista vacía
 	List<int> idsEmpleados = Context.Session.GetObject<List<int>>("IDSEMPLEADOS") ?? new List<int>();
+	List<Empleado> favoritos = memoryCache.Get<List<Empleado>>("FAVORITOS") ?? new List<Empleado>();
 }
 
 <h1 style="color:darkred">Session Empleados OK</h1>
+
+@if (idsEmpleados != null)
+{
+	<h3 style="background-color:lightgreen; color:black">
+		Empleados Session: @idsEmpleados.Count
+	</h3>
+}
+
+@if (favoritos != null)
+{
+	<h3 style="background-color:blue; color:white">
+		Favoritos: @favoritos.Count
+	</h3>
+}
 
 <p>
 	<a asp-controller="Empleados"
@@ -23,6 +38,20 @@
 		<li class="list-group-item">
 			@empleado.Apellido
 
+			@if (favoritos.Any(f => f.IdEmpleado == empleado.IdEmpleado))
+			{
+				<img src="~/images/iconolove.png" alt="Check" width="25" height="25">
+			}
+			else
+			{
+				<a asp-controller="Empleados"
+				   asp-action="SessionEmpleadosOk"
+				   asp-route-idfavorito="@empleado.IdEmpleado"
+				   class="btn btn-warning">
+					Favorito
+				</a>
+			}
+
 			@if (idsEmpleados.Contains(empleado.IdEmpleado))
 			{
 				<img src="~/images/check.jpg" alt="Check" width="25" height="25">
@@ -34,7 +63,7 @@
 				   asp-route-idempleado="@empleado.IdEmpleado">
 					Almacenar empleado: @empleado.IdEmpleado
 				</a>
-			}			
+			}
 		</li>
 	}
 </ul>

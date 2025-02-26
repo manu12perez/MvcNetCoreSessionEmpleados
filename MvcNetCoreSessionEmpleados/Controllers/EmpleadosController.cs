@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using MvcNetCoreSessionEmpleados.Extensions;
 using MvcNetCoreSessionEmpleados.Models;
 using MvcNetCoreSessionEmpleados.Repositories;
@@ -8,10 +9,12 @@ namespace MvcNetCoreSessionEmpleados.Controllers
     public class EmpleadosController : Controller
     {
         private RepositoryEmpleados repo;
+        private IMemoryCache memoryCache;
 
-        public EmpleadosController(RepositoryEmpleados repo)
+        public EmpleadosController(RepositoryEmpleados repo, IMemoryCache memoryCache)
         {
             this.repo = repo;
+            this.memoryCache = memoryCache;
         }
 
         public async Task<IActionResult> SessionSalarios(int? salario)
@@ -84,8 +87,30 @@ namespace MvcNetCoreSessionEmpleados.Controllers
             return View();
         }
 
-        public async Task<IActionResult> SessionEmpleadosOk(int? idEmpleado)
+        public async Task<IActionResult> SessionEmpleadosOk(int? idEmpleado, int? idfavorito)
         {
+            if(idfavorito != null)
+            {
+                //COMO ESTOY ALMACENANDO EN CACHE DE CLIENTE, VAMOS A UTILIZAR LOS OBJETOS EN LUGAR DE LOS IDS.
+                List<Empleado> empleadosFavoritos;
+
+                if(this.memoryCache.Get("FAVORITOS") == null)
+                {
+                    //NO EXISTE, CREAMOS LA COLECCION DE FAVORITOS
+                    empleadosFavoritos = new List<Empleado>();
+                }
+                else
+                {
+                    //EXISTE,RECUPERAMOS LOS EMPLEADOS QUE TENEMOS EN LA COLECCION DE FAVORITOS DE CACHE.
+                    empleadosFavoritos = this.memoryCache.Get<List<Empleado>>("FAVORITOS");
+                }
+
+                //BUSCAMOS EL ONJETO EMPLEADO A ALMACENAR
+                Empleado emp = await this.repo.FindEmpleadoAsync(idfavorito.Value);
+                empleadosFavoritos.Add(emp);
+                this.memoryCache.Set("FAVORITOS", empleadosFavoritos);
+            }
+
             if(idEmpleado != null)
             {
                 //ALMACENAREMOS LO MINIMO QUE PODAMOS (int)
@@ -202,6 +227,42 @@ namespace MvcNetCoreSessionEmpleados.Controllers
 
             // Redirigir de nuevo a la vista de empleados almacenados
             return RedirectToAction("EmpleadosAlmacenadosOk");
+        }
+
+        public IActionResult EmpleadosFavoritos(int? ideliminar)
+        {
+            //PREGUNTAMOS SI EXISTEN FAVORITOS
+            //if(this.memoryCache.Get("FAVORITOS") == null)
+            //{
+            //    ViewData["MENSAJE"] = "No existen favoritos almacenados.";
+            //    return View();
+            //}
+            //else
+            //{
+            //    List<Empleado> favoritos = this.memoryCache.Get<List<Empleado>>("FAVORITOS");
+            //    return View(favoritos);
+            //}
+
+            if(ideliminar != null)
+            {
+                List<Empleado> favoritos = this.memoryCache.Get<List<Empleado>>("FAVORITOS");
+
+                //BUSCAMOS EL EMPLEADO A ELIMINAR DENTRO DE LA COLECCION DE FAVORITOS
+                Empleado empDelete = favoritos.Find(z => z.IdEmpleado == ideliminar.Value);
+                //LO ELIMINAMOS DE LA COLECCION
+                favoritos.Remove(empDelete);
+
+                if(favoritos.Count == 0)
+                {
+                    this.memoryCache.Remove("FAVORITOS");
+                }
+                else
+                {
+                    this.memoryCache.Set("FAVORITOS", favoritos);
+                }
+            }
+
+            return View();
         }
     }
 }
